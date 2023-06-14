@@ -64,3 +64,29 @@ public:
         return this->_get(i);
     }
 };
+
+template <typename T>
+class RangeUpdateRangeQuery
+{
+private:
+    RangeUpdatePointQuery BIT1;
+    PointUpdateRangeQuery BIT2;
+    T _get(int i)
+    {
+        return BIT1.get(i) * i - BIT2.get(i);
+    }
+
+public:
+    RangeUpdateRangeQuery() = default;
+    RangeUpdateRangeQuery(int limit) : BIT1(limit), BIT2(limit) {}
+    void update(int l, int r, T val)
+    {
+        BIT1.update(l, r, val);
+        BIT2.update(l, (l - 1) * val);
+        BIT2.update(r + 1, -r * val);
+    }
+    T get(int l, int r)
+    {
+        return _get(r) - _get(l - 1);
+    }
+};
